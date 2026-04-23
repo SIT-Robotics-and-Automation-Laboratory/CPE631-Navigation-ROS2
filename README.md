@@ -47,7 +47,7 @@ This creates:
 
 ### 3) Navigation (load map, Nav2)
 ```bash
-ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=/home/yifan/ros2_ws/src/cpe631_ros2/maps/cafe.yaml
+ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=~/ros2_ws/src/cpe631_ros2/maps/cafe/cafe.yaml
 ```
 In RViz:
 - Click **2D Pose Estimate** to set the initial pose.
