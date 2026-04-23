@@ -64,7 +64,7 @@ In RViz:
 
 Example (navigation with pedestrians):
 ```bash
-ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=/home/yifan/ros2_ws/src/cpe631_ros2/maps/cafe.yaml enable_peds:=true
+ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=~/ros2_ws/src/cpe631_ros2/maps/cafe/cafe.yaml enable_peds:=true
 ```
 
 ## Configurable parameters
