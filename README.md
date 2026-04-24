@@ -24,12 +24,13 @@ cd <your_ros2_ws>
 colcon build --packages-select cpe631_ros2
 source install/setup.bash
 ```
+Source install/setup.bash every time when you open a new terminal
 
 ## Run
 ### 1) Mapping (static scene, no pedestrians)
 From this package directory (so relative paths work):
 ```bash
-cd <your_ros2_ws>/src/cpe631_ros2
+cd <your_ros2_ws>
 ```
 ```bash
 ros2 launch cpe631_ros2 cafe.launch.py mapping:=true
