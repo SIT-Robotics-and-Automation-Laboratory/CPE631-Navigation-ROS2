@@ -51,8 +51,9 @@ This creates:
 - `maps/cafe.pgm`
 
 ### 3) Navigation (load map, Nav2)
+Example (navigation without pedestrians):
 ```bash
-ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=/maps/cafe.yaml
+ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=<path to map>/cafe.yaml enable_peds:=false
 ```
 In RViz:
 - Click **2D Pose Estimate** to set the initial pose.
@@ -69,7 +70,7 @@ In RViz:
 
 Example (navigation with pedestrians):
 ```bash
-ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=/maps/cafe.yaml enable_peds:=true
+ros2 launch cpe631_ros2 cafe.launch.py navigation:=true map_file:=<path to map>/cafe.yaml enable_peds:=true
 ```
 
 ## Configurable parameters
