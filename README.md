@@ -113,7 +113,7 @@ This repo supports two separate Nav2 configurations:
 ### Dynamic obstacle avoidance (conservative)
 For a more conservative setup that better handles dynamic obstacles (e.g., pedestrians), use the dedicated launch + params (does not modify `param/nav2_burger.yaml`):
 ```bash
-ros2 launch cpe631_ros2 cafe_dynamic.launch.py navigation:=true map_file:=maps/cafe.yaml enable_peds:=true
+ros2 launch cpe631_ros2 cafe_dynamic.launch.py navigation:=true map_file:=<path to map>/cafe.yaml enable_peds:=true
 ```
 This launch uses:
 - Params: `param/nav2_dynamic_conservative.yaml` (NavFn global planner + MPPI local controller)
