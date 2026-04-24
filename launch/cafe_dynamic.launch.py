@@ -2,11 +2,48 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+    SetEnvironmentVariable,
+    SetLaunchConfiguration,
+)
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression, TextSubstitution
 from launch_ros.actions import Node
+
+
+def _resolve_map_file(context, pkg_share: str):
+    map_override_raw = LaunchConfiguration('map').perform(context)
+    map_file_raw = map_override_raw if map_override_raw else LaunchConfiguration('map_file').perform(context)
+    map_file_stripped = map_file_raw.strip()
+    if (
+        len(map_file_stripped) >= 2
+        and map_file_stripped[0] == map_file_stripped[-1]
+        and map_file_stripped[0] in ("'", '"')
+    ):
+        map_file_stripped = map_file_stripped[1:-1].strip()
+
+    if map_file_stripped.startswith('file://'):
+        map_file_stripped = map_file_stripped[len('file://'):]
+
+    map_file_expanded = os.path.expandvars(os.path.expanduser(map_file_stripped))
+
+    if not map_file_expanded:
+        resolved_map_file = ''
+    elif os.path.isabs(map_file_expanded):
+        resolved_map_file = os.path.normpath(map_file_expanded)
+    else:
+        candidate_from_cwd = os.path.normpath(os.path.join(os.getcwd(), map_file_expanded))
+        if os.path.exists(candidate_from_cwd):
+            resolved_map_file = candidate_from_cwd
+        else:
+            candidate_from_pkg = os.path.normpath(os.path.join(pkg_share, map_file_expanded))
+            resolved_map_file = candidate_from_pkg if os.path.exists(candidate_from_pkg) else candidate_from_cwd
+
+    return [SetLaunchConfiguration('map_file_resolved', resolved_map_file)]
 
 
 def generate_launch_description():
@@ -24,6 +61,7 @@ def generate_launch_description():
     mapping_arg = DeclareLaunchArgument('mapping', default_value='false')
     navigation_arg = DeclareLaunchArgument('navigation', default_value='false')
     enable_peds_arg = DeclareLaunchArgument('enable_peds', default_value='true')
+    map_arg = DeclareLaunchArgument('map', default_value='')
     map_file_arg = DeclareLaunchArgument('map_file', default_value=default_map)
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='true')
     model_arg = DeclareLaunchArgument('model', default_value='burger')
@@ -33,11 +71,13 @@ def generate_launch_description():
     mapping = LaunchConfiguration('mapping')
     navigation = LaunchConfiguration('navigation')
     enable_peds = LaunchConfiguration('enable_peds')
-    map_file = LaunchConfiguration('map_file')
+    map_file_resolved = LaunchConfiguration('map_file_resolved')
     use_sim_time = LaunchConfiguration('use_sim_time')
     model = LaunchConfiguration('model')
     use_composition = LaunchConfiguration('use_composition')
     nav2_log_level = LaunchConfiguration('nav2_log_level')
+
+    resolve_map_file = OpaqueFunction(function=_resolve_map_file, args=[pkg_share])
 
     gz_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -180,7 +220,7 @@ def generate_launch_description():
         launch_arguments={
             'slam': 'False',
             'use_localization': 'True',
-            'map': map_file,
+            'map': map_file_resolved,
             'use_sim_time': use_sim_time,
             'autostart': 'true',
             'params_file': nav2_params,
@@ -222,11 +262,13 @@ def generate_launch_description():
         mapping_arg,
         navigation_arg,
         enable_peds_arg,
+        map_arg,
         map_file_arg,
         use_sim_time_arg,
         model_arg,
         use_composition_arg,
         nav2_log_level_arg,
+        resolve_map_file,
         set_resource_path,
         set_plugin_path,
         set_ign_plugin_path,
