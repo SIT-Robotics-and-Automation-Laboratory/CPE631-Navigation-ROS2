@@ -25,6 +25,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
     ]
     + [(os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py'))]
+    + [(os.path.join('share', package_name, 'maps'), glob('maps/*'))]
     + [(os.path.join('share', package_name, 'worlds'), glob('worlds/*'))]
     + [(os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz'))]
     + [(os.path.join('share', package_name, 'param'), glob('param/*.yaml'))]
@@ -40,6 +41,7 @@ setup(
         'console_scripts': [
             'cpe631_teleop = cpe631_ros2.teleop:main',
             'cpe631_peds = cpe631_ros2.peds:main',
+            'cpe631_map_republisher = cpe631_ros2.map_republisher:main',
         ],
     },
 )
